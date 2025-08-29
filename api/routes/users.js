@@ -5,22 +5,20 @@ import {
   getUser,
   getUsers,
 } from "../controllers/user.js";
-// MODIFIED: verifyAdmin is now verifySuperAdmin for clarity and security.
-import { verifySuperAdmin, verifyToken, verifyUser } from "../utils/verifyToken.js";
+import { verifyToken, verifyUser, verifySuperAdmin } from "../utils/verifyToken.js";
 
 const router = express.Router();
 
 // UPDATE
-router.put("/:id", verifyUser, updateUser);
+router.put("/:id", verifyToken, verifyUser, updateUser);
 
 // DELETE
-router.delete("/:id", verifyUser, deleteUser);
+router.delete("/:id", verifyToken, verifyUser, deleteUser);
 
 // GET
-router.get("/:id", verifyUser, getUser);
+router.get("/:id", verifyToken, verifyUser, getUser);
 
 // GET ALL
-// MODIFIED: This route is now correctly protected by verifySuperAdmin.
-router.get("/", verifySuperAdmin, getUsers);
+router.get("/", verifyToken, verifySuperAdmin, getUsers);
 
 export default router;
