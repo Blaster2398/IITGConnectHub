@@ -37,9 +37,8 @@ export const verifyToken = (req, res, next) => {
 };
 
 export const verifyUser = (req, res, next) => {
-  verifyToken(req, res, async () => {
-    const currentUser = await User.findById(req.user.id);
-    if (req.user.id === req.params.id || currentUser.role === 'SuperAdmin' || currentUser.role === 'BoardAdmin') {
+  verifyToken(req, res, () => {
+    if (req.user.id === req.params.id || req.user.role === 'SuperAdmin' || req.user.role === 'BoardAdmin') {
       next();
     } else {
       return next(createError(403, "You are not authorized!"));
@@ -49,9 +48,8 @@ export const verifyUser = (req, res, next) => {
 
 // RENAMED from verifyAdmin for clarity. This specifically checks for the highest-level admin.
 export const verifySuperAdmin = (req, res, next) => {
-  verifyToken(req, res, async () => {
-    const currentUser = await User.findById(req.user.id);
-    if (currentUser && currentUser.role === 'SuperAdmin') {
+  verifyToken(req, res, () => {
+    if (req.user.role === 'SuperAdmin') {
       next();
     } else {
       return next(createError(403, "This action requires SuperAdmin privileges."));
