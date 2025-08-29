@@ -5,12 +5,10 @@ const TeamSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // RENAMED: 'type' now represents the team's board (e.g., Technical, Cultural)
   board: {
     type: String,
     required: true,
   },
-  // RENAMED: 'city' is now 'category' (e.g., Fest, Club, Project)
   category: {
     type: String,
     required: true,
@@ -22,11 +20,17 @@ const TeamSchema = new mongoose.Schema({
   photos: {
     type: [String],
   },
-  // RENAMED: 'rooms' are now 'roles'
-  roles: {
+  // NEW: A field for specific tags/skills like 'webops', 'ml', etc.
+  tags: {
     type: [String],
+    default: [],
   },
-  // ADDED: A field for the team's rating or reputation
+  // CORRECTED: The 'roles' array should store proper ObjectIDs, not strings.
+  // This is crucial for efficiently querying role availability.
+  roles: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'Role'
+  },
   rating: {
     type: Number,
     min: 0,

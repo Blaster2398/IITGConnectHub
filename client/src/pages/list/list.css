@@ -38,11 +38,19 @@
   font-size: 12px;
 }
 
-.lsItem > input {
+.lsItem > input, .lsItem > .lsSelect { /* MODIFIED: Apply styles to select as well */
   height: 30px;
   border: none;
   padding: 5px;
+  border-radius: 3px; /* Added for consistency */
 }
+
+/* NEW: Specific style for select element for better appearance */
+.lsSelect {
+  height: 40px !important;
+  cursor: pointer;
+}
+
 
 .listSearch > button {
   padding: 10px;
@@ -52,6 +60,7 @@
   width: 100%;
   font-weight: 500;
   cursor: pointer;
+  border-radius: 3px;
 }
 
 .listResult {

@@ -1,5 +1,6 @@
 import Team from "../models/Team.js";
 import Role from "../models/Role.js";
+import mongoose from "mongoose";
 
 export const createTeam = async (req, res, next) => {
   const newTeam = new Team(req.body);
@@ -35,29 +36,61 @@ export const getTeam = async (req, res, next) => {
   try {
     const team = await Team.findById(req.params.id);
     res.status(200).json(team);
-  } catch (err) {
+  } catch (err)
+  {
     next(err);
   }
 };
 
-// MODIFIED: This function now handles case-insensitive searching for categories.
 export const getTeams = async (req, res, next) => {
-  const { limit, category, ...others } = req.query;
+  const { limit, category, tag, minAvailability, ...others } = req.query;
   try {
-    const query = { ...others };
-
-    // If a category is provided in the query, use a case-insensitive regex for the search.
+    const findCriteria = { ...others };
     if (category) {
-      query.category = { $regex: new RegExp(`^${category}$`, 'i') };
+      findCriteria.category = { $regex: new RegExp(`^${category}$`, 'i') };
+    }
+    // CORRECTED: To query for a single tag within an array, the $in operator is more robust.
+    if (tag) {
+      findCriteria.tags = { $in: [tag] };
     }
 
-    // Ensure the limit is a number, otherwise mongoose might throw an error.
-    const teams = await Team.find(query).limit(limit ? parseInt(limit) : 0);
-    res.status(200).json(teams);
+    if (minAvailability && parseInt(minAvailability) > 0) {
+      const availabilityNum = parseInt(minAvailability);
+
+      const teams = await Team.aggregate([
+        { $match: findCriteria },
+        {
+          $lookup: {
+            from: 'roles',
+            localField: 'roles',
+            foreignField: '_id',
+            as: 'roleDetails'
+          }
+        },
+        {
+          $addFields: {
+            totalAvailability: { $sum: '$roleDetails.positionsAvailable' }
+          }
+        },
+        {
+          $match: {
+            totalAvailability: { $gte: availabilityNum }
+          }
+        },
+        { $limit: limit ? parseInt(limit) : 100 }
+      ]);
+      
+      res.status(200).json(teams);
+
+    } else {
+      const teams = await Team.find(findCriteria).limit(limit ? parseInt(limit) : 0);
+      res.status(200).json(teams);
+    }
   } catch (err) {
     next(err);
   }
 };
+
 
 export const countByCategory = async (req, res, next) => {
   const categories = req.query.categories.split(",");
