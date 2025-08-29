@@ -11,10 +11,10 @@ const Header = ({ type }) => {
   const [category, setCategory] = useState("");
   const navigate = useNavigate();
 
+  // MODIFIED: This function now navigates even if the category is empty.
+  // The List page will handle an empty category by showing all teams.
   const handleSearch = () => {
-    if (category) {
-      navigate("/teams", { state: { category } });
-    }
+    navigate("/teams", { state: { category } });
   };
 
   return (
@@ -47,7 +47,7 @@ const Header = ({ type }) => {
                 <FontAwesomeIcon icon={faBriefcase} className="headerIcon" />
                 <input
                   type="text"
-                  placeholder="What category are you looking for?"
+                  placeholder="What category are you looking for? (e.g., Fest)"
                   className="headerSearchInput"
                   onChange={(e) => setCategory(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -67,3 +67,4 @@ const Header = ({ type }) => {
 };
 
 export default Header;
+

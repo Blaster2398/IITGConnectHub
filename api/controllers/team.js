@@ -39,17 +39,26 @@ export const getTeam = async (req, res, next) => {
     next(err);
   }
 };
+
+// MODIFIED: This function now handles case-insensitive searching for categories.
 export const getTeams = async (req, res, next) => {
-  const { ...others } = req.query;
+  const { limit, category, ...others } = req.query;
   try {
-    const teams = await Team.find({
-      ...others,
-    }).limit(req.query.limit);
+    const query = { ...others };
+
+    // If a category is provided in the query, use a case-insensitive regex for the search.
+    if (category) {
+      query.category = { $regex: new RegExp(`^${category}$`, 'i') };
+    }
+
+    // Ensure the limit is a number, otherwise mongoose might throw an error.
+    const teams = await Team.find(query).limit(limit ? parseInt(limit) : 0);
     res.status(200).json(teams);
   } catch (err) {
     next(err);
   }
 };
+
 export const countByCategory = async (req, res, next) => {
   const categories = req.query.categories.split(",");
   try {
@@ -96,3 +105,4 @@ export const getTeamRoles = async (req, res, next) => {
     next(err);
   }
 };
+

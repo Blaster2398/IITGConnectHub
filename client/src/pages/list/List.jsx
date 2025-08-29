@@ -8,10 +8,11 @@ import useFetch from "../../hooks/useFetch";
 
 const List = () => {
   const location = useLocation();
-  const [category, setCategory] = useState(location.state.category);
-  
+  const [category, setCategory] = useState(location.state?.category || "");
+
+  // MODIFIED: Construct the URL conditionally. If category is empty, fetch all teams.
   const { data, loading, error, reFetch } = useFetch(
-    `/teams?category=${category}`
+    category ? `/teams?category=${category}` : "/teams"
   );
 
   const handleClick = () => {
@@ -28,10 +29,12 @@ const List = () => {
             <h1 className="lsTitle">Search</h1>
             <div className="lsItem">
               <label>Category</label>
-              <input 
-                placeholder={category} 
-                type="text" 
-                onChange={e=>setCategory(e.target.value)}
+              <input
+                placeholder="e.g., Fest, Club"
+                type="text"
+                value={category} // Use value to control the input
+                onChange={(e) => setCategory(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleClick()}
               />
             </div>
             <button onClick={handleClick}>Search</button>
@@ -41,9 +44,13 @@ const List = () => {
               "loading"
             ) : (
               <>
-                {data.map((item) => (
-                  <SearchItem item={item} key={item._id} />
-                ))}
+                {data.length > 0 ? (
+                  data.map((item) => (
+                    <SearchItem item={item} key={item._id} />
+                  ))
+                ) : (
+                  <p>No teams found for this category.</p>
+                )}
               </>
             )}
           </div>

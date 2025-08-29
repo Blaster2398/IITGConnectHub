@@ -17,6 +17,11 @@ export const applyToRole = async (req, res, next) => {
 
     const role = await Role.findById(req.params.id);
     if (!role) return next(createError(404, "Role not found"));
+    
+    // NEW: Backend check to see if positions are available
+    if (role.positionsAvailable <= 0) {
+        return next(createError(400, "Sorry, all positions for this role have been filled."));
+    }
 
     // 2. Check if user has already applied
     const hasApplied = role.applicants.some(app => app.userId === req.body.userId);
@@ -37,46 +42,82 @@ export const applyToRole = async (req, res, next) => {
   }
 };
 
-// This function now contains the complex logic for accepting/rejecting.
+// MODIFIED: This function now correctly handles rejecting a previously accepted applicant.
 export const updateApplicationStatus = async (req, res, next) => {
-  const { status } = req.body;
+  const { status: newStatus } = req.body;
   const { roleid, userid } = req.params;
 
   try {
-    if (status === "Rejected") {
-      // 1. If rejected, simply remove the applicant from the array.
-      await Role.findByIdAndUpdate(roleid, {
-        $pull: { applicants: { userId: userid } }
-      });
-      return res.status(200).json("Applicant rejected and removed.");
+    // Find the role first to check the current state
+    const role = await Role.findById(roleid);
+    if (!role) return next(createError(404, "Role not found."));
+
+    const applicant = role.applicants.find(app => app.userId === userid);
+    if (!applicant) return next(createError(404, "Applicant not found for this role."));
+    
+    const oldStatus = applicant.status;
+
+    // No change, do nothing.
+    if (oldStatus === newStatus) {
+        return res.status(200).json("Status is already set to the desired value.");
     }
 
-    if (status === "Accepted") {
-      // 2. If accepted, update status and decrement available positions.
-      const updatedRole = await Role.findOneAndUpdate(
-        { _id: roleid, "applicants.userId": userid },
-        {
-          $set: { "applicants.$.status": "Accepted" },
-          $inc: { positionsAvailable: -1 }
-        },
-        { new: true } // Return the document after update
-      );
+    // --- Main Logic ---
+    let updateQuery = {};
 
-      // 3. Check if all positions are now filled.
-      if (updatedRole.positionsAvailable <= 0) {
-        // Auto-reject all other non-accepted applicants.
+    // Case 1: Applicant is REJECTED
+    if (newStatus === "Rejected") {
+        // If the applicant was previously accepted, we need to restore the position count.
+        const incrementValue = oldStatus === 'Accepted' ? 1 : 0;
+        
         await Role.findByIdAndUpdate(roleid, {
-          $pull: { applicants: { status: { $ne: "Accepted" } } }
+            $pull: { applicants: { userId: userid } },
+            $inc: { positionsAvailable: incrementValue }
         });
-      }
+        return res.status(200).json("Applicant rejected and removed.");
+    }
+
+    // Case 2: Applicant is ACCEPTED
+    if (newStatus === "Accepted") {
+        // Only decrement positions if they were not already accepted
+        const decrementValue = oldStatus !== 'Accepted' ? -1 : 0;
+        
+        // Ensure we don't accept more people than available spots
+        if (role.positionsAvailable <= 0 && decrementValue < 0) {
+            return next(createError(400, "Cannot accept applicant, no positions available."));
+        }
+
+        updateQuery = {
+            $set: { "applicants.$.status": "Accepted" },
+            $inc: { positionsAvailable: decrementValue }
+        };
+        
+        const updatedRole = await Role.findOneAndUpdate(
+            { _id: roleid, "applicants.userId": userid },
+            updateQuery,
+            { new: true }
+        );
+
+        // Auto-reject others if all positions are now filled.
+        if (updatedRole.positionsAvailable <= 0) {
+            await Role.findByIdAndUpdate(roleid, {
+                $pull: { applicants: { status: { $ne: "Accepted" } } }
+            });
+        }
     } else {
-      // For other statuses like "Interviewing"
+      // Case 3: For other statuses like "Interviewing" or moving from Accepted to Interviewing
+      const incrementValue = oldStatus === 'Accepted' ? 1 : 0; // Restore position if moving away from 'Accepted'
+      updateQuery = {
+          $set: { "applicants.$.status": newStatus },
+          $inc: { positionsAvailable: incrementValue }
+      };
       await Role.updateOne(
         { _id: roleid, "applicants.userId": userid },
-        { $set: { "applicants.$.status": status } }
+        updateQuery
       );
     }
-    res.status(200).json("Application status updated.");
+    
+    res.status(200).json("Application status updated successfully.");
   } catch (err) {
     next(err);
   }
@@ -103,7 +144,14 @@ export const decreaseOpenings = async (req, res, next) => {
         if (role.positionsAvailable <= 0) {
             return next(createError(400, "Cannot decrease openings below zero."));
         }
-  
+        
+        // NEW: Prevent decreasing openings below the number of accepted applicants
+        const acceptedCount = role.applicants.filter(app => app.status === 'Accepted').length;
+        if (role.originalPositions - 1 < acceptedCount) {
+             return next(createError(400, `Cannot decrease openings. There are already ${acceptedCount} accepted applicants.`));
+        }
+
+
         await Role.findByIdAndUpdate(req.params.id, {
             $inc: { positionsAvailable: -1, originalPositions: -1 }
         });
