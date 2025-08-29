@@ -1,0 +1,99 @@
+.roleFormModal {
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001; /* Higher z-index to appear above the TeamForm modal */
+}
+
+.roleFormContainer {
+  background-color: #ffffff;
+  padding: 30px;
+  position: relative;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 500px;
+}
+
+.roleFormClose {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  font-size: 24px;
+  color: #6c757d;
+}
+
+.roleFormContainer h3 {
+  font-size: 20px;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 25px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.roleFormItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.roleFormItem label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+}
+
+.roleFormItem input,
+.roleFormItem textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+  font-size: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.roleFormItem input:focus,
+.roleFormItem textarea:focus {
+  outline: none;
+  border-color: #0071c2;
+  box-shadow: 0 0 0 2px rgba(0, 113, 194, 0.2);
+}
+
+.roleFormItem textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.roleFormActions {
+  text-align: right;
+  border-top: 1px solid #dee2e6;
+  padding-top: 20px;
+  margin-top: 10px;
+}
+
+.roleSaveBtn {
+  background-color: #0071c2;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.roleSaveBtn:hover {
+  background-color: #005a9c;
+}
+

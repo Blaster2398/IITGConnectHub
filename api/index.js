@@ -5,6 +5,7 @@ import authRoute from "./routes/auth.js";
 import usersRoute from "./routes/users.js";
 import teamsRoute from "./routes/teams.js";
 import rolesRoute from "./routes/roles.js";
+import settingsRoute from "./routes/settings.js"; // IMPORT NEW ROUTE
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
@@ -25,7 +26,6 @@ mongoose.connection.on("disconnected", () => {
 });
 
 // Middlewares
-// MODIFIED: Configure CORS to allow credentials from a specific origin
 app.use(cors({
   origin: "http://localhost:3000",
   credentials: true
@@ -38,6 +38,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/teams", teamsRoute);
 app.use("/api/roles", rolesRoute);
+app.use("/api/settings", settingsRoute); // USE NEW ROUTE
 
 app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;
@@ -54,3 +55,4 @@ app.listen(8800, () => {
   connect();
   console.log("Connected to backend on port 8800.");
 });
+

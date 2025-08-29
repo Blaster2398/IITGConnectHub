@@ -1,0 +1,172 @@
+.formModal {
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.formContainer {
+  background-color: #f8f9fa;
+  padding: 30px;
+  position: relative;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  width: 90%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.formClose {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  font-size: 24px;
+  color: #6c757d;
+}
+
+.twoColumn {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  grid-template-areas: 
+    "col1 col2"
+    "actions actions";
+}
+
+.formColumn h3 {
+  font-size: 20px;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 25px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.formColumn:first-child {
+  grid-area: col1;
+}
+
+.formColumn:last-child {
+  grid-area: col2;
+}
+
+.formItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.formItem label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+}
+
+.formItem input[type="text"],
+.formItem textarea,
+.formItem select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+  font-size: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.formItem input[type="text"]:focus,
+.formItem textarea:focus,
+.formItem select:focus {
+  outline: none;
+  border-color: #0071c2;
+  box-shadow: 0 0 0 2px rgba(0, 113, 194, 0.2);
+}
+
+.formItem textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.featuredToggle {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.formActions {
+  grid-area: actions;
+  text-align: right;
+  border-top: 1px solid #dee2e6;
+  padding-top: 20px;
+  margin-top: 10px;
+}
+
+.saveBtn {
+  background-color: #0071c2;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.saveBtn:hover {
+  background-color: #005a9c;
+}
+
+.formError {
+  color: #dc3545;
+  margin-top: 15px;
+  text-align: center;
+  grid-column: 1 / -1;
+}
+
+/* Role Management Styles */
+.addNewRoleBtn {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.rolesList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.roleItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+}
+
+.roleActions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6c757d;
+  font-size: 16px;
+  margin-left: 10px;
+}
+

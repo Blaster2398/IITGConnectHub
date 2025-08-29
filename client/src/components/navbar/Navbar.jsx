@@ -20,6 +20,9 @@ const Navbar = () => {
     navigate("/register");
   };
 
+  // NEW: Check if the user is an admin
+  const isAdmin = user && (user.role === 'BoardAdmin' || user.role === 'SuperAdmin');
+
   return (
     <div className="navbar">
       <div className="navContainer">
@@ -29,6 +32,12 @@ const Navbar = () => {
         {user ? (
           <div className="userActions">
             <span className="username">{user.username}</span>
+            {/* NEW: Conditionally render Admin Panel button */}
+            {isAdmin && (
+              <Link to="/admin">
+                <button className="navButton adminPanelBtn">Admin Panel</button>
+              </Link>
+            )}
             <button onClick={handleLogout} className="navButton">Logout</button>
           </div>
         ) : (
@@ -43,3 +52,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

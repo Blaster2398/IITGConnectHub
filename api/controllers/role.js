@@ -4,13 +4,11 @@ import User from "../models/User.js";
 import { createError } from "../utils/error.js";
 import mongoose from "mongoose";
 
-// MODIFIED: Prevent admins from applying and check if already applied
 export const applyToRole = async (req, res, next) => {
   try {
     const user = await User.findById(req.body.userId);
     if (!user) return next(createError(404, "User not found"));
 
-    // 1. Prevent admins from applying
     if (user.role === 'BoardAdmin' || user.role === 'SuperAdmin') {
         return next(createError(403, "Administrators cannot apply for roles."));
     }
@@ -18,12 +16,11 @@ export const applyToRole = async (req, res, next) => {
     const role = await Role.findById(req.params.id);
     if (!role) return next(createError(404, "Role not found"));
     
-    // NEW: Backend check to see if positions are available
+    // SERVER-SIDE CHECK: Prevent applying if no positions are available
     if (role.positionsAvailable <= 0) {
-        return next(createError(400, "Sorry, all positions for this role have been filled."));
+      return next(createError(400, "No positions available for this role."));
     }
 
-    // 2. Check if user has already applied
     const hasApplied = role.applicants.some(app => app.userId === req.body.userId);
     if (hasApplied) return next(createError(400, "You have already applied for this role."));
 
@@ -42,82 +39,59 @@ export const applyToRole = async (req, res, next) => {
   }
 };
 
-// MODIFIED: This function now correctly handles rejecting a previously accepted applicant.
 export const updateApplicationStatus = async (req, res, next) => {
-  const { status: newStatus } = req.body;
+  const { status } = req.body;
   const { roleid, userid } = req.params;
 
   try {
-    // Find the role first to check the current state
     const role = await Role.findById(roleid);
     if (!role) return next(createError(404, "Role not found."));
 
     const applicant = role.applicants.find(app => app.userId === userid);
-    if (!applicant) return next(createError(404, "Applicant not found for this role."));
+    if (!applicant) return next(createError(404, "Applicant not found in this role."));
     
-    const oldStatus = applicant.status;
+    const wasAccepted = applicant.status === "Accepted";
 
-    // No change, do nothing.
-    if (oldStatus === newStatus) {
-        return res.status(200).json("Status is already set to the desired value.");
+    if (status === "Rejected") {
+      // If they were previously accepted, increment positions back.
+      const update = wasAccepted
+        ? { $pull: { applicants: { userId: userid } }, $inc: { positionsAvailable: 1 } }
+        : { $pull: { applicants: { userId: userid } } };
+      
+      await Role.findByIdAndUpdate(roleid, update);
+      return res.status(200).json("Applicant rejected and removed.");
     }
 
-    // --- Main Logic ---
-    let updateQuery = {};
+    if (status === "Accepted") {
+      // Only allow acceptance if positions are available and they weren't already accepted.
+      if (role.positionsAvailable <= 0 && !wasAccepted) {
+        return next(createError(400, "Cannot accept applicant, no positions available."));
+      }
 
-    // Case 1: Applicant is REJECTED
-    if (newStatus === "Rejected") {
-        // If the applicant was previously accepted, we need to restore the position count.
-        const incrementValue = oldStatus === 'Accepted' ? 1 : 0;
-        
-        await Role.findByIdAndUpdate(roleid, {
-            $pull: { applicants: { userId: userid } },
-            $inc: { positionsAvailable: incrementValue }
-        });
-        return res.status(200).json("Applicant rejected and removed.");
-    }
+      const update = wasAccepted 
+        ? { $set: { "applicants.$.status": "Accepted" } }
+        : { $set: { "applicants.$.status": "Accepted" }, $inc: { positionsAvailable: -1 } };
 
-    // Case 2: Applicant is ACCEPTED
-    if (newStatus === "Accepted") {
-        // Only decrement positions if they were not already accepted
-        const decrementValue = oldStatus !== 'Accepted' ? -1 : 0;
-        
-        // Ensure we don't accept more people than available spots
-        if (role.positionsAvailable <= 0 && decrementValue < 0) {
-            return next(createError(400, "Cannot accept applicant, no positions available."));
-        }
-
-        updateQuery = {
-            $set: { "applicants.$.status": "Accepted" },
-            $inc: { positionsAvailable: decrementValue }
-        };
-        
-        const updatedRole = await Role.findOneAndUpdate(
-            { _id: roleid, "applicants.userId": userid },
-            updateQuery,
-            { new: true }
-        );
-
-        // Auto-reject others if all positions are now filled.
-        if (updatedRole.positionsAvailable <= 0) {
-            await Role.findByIdAndUpdate(roleid, {
-                $pull: { applicants: { status: { $ne: "Accepted" } } }
-            });
-        }
-    } else {
-      // Case 3: For other statuses like "Interviewing" or moving from Accepted to Interviewing
-      const incrementValue = oldStatus === 'Accepted' ? 1 : 0; // Restore position if moving away from 'Accepted'
-      updateQuery = {
-          $set: { "applicants.$.status": newStatus },
-          $inc: { positionsAvailable: incrementValue }
-      };
-      await Role.updateOne(
+      const updatedRole = await Role.findOneAndUpdate(
         { _id: roleid, "applicants.userId": userid },
-        updateQuery
+        update,
+        { new: true }
       );
+
+      if (updatedRole.positionsAvailable <= 0) {
+        await Role.findByIdAndUpdate(roleid, {
+          $pull: { applicants: { status: { $ne: "Accepted" } } }
+        });
+      }
+    } else {
+      // For any other status change like "Interviewing"
+      const update = wasAccepted
+        ? { $set: { "applicants.$.status": status }, $inc: { positionsAvailable: 1 } }
+        : { $set: { "applicants.$.status": status } };
+        
+      await Role.updateOne({ _id: roleid, "applicants.userId": userid }, update);
     }
-    
-    res.status(200).json("Application status updated successfully.");
+    res.status(200).json("Application status updated.");
   } catch (err) {
     next(err);
   }
@@ -134,23 +108,19 @@ export const increaseOpenings = async (req, res, next) => {
     }
 };
 
-// NEW: Function to decrease the number of available positions.
 export const decreaseOpenings = async (req, res, next) => {
     try {
         const role = await Role.findById(req.params.id);
         if (!role) return next(createError(404, "Role not found"));
 
-        // Prevent decreasing if no positions are available
         if (role.positionsAvailable <= 0) {
             return next(createError(400, "Cannot decrease openings below zero."));
         }
-        
-        // NEW: Prevent decreasing openings below the number of accepted applicants
+
         const acceptedCount = role.applicants.filter(app => app.status === 'Accepted').length;
         if (role.originalPositions - 1 < acceptedCount) {
-             return next(createError(400, `Cannot decrease openings. There are already ${acceptedCount} accepted applicants.`));
+          return next(createError(400, "Cannot decrease openings below the number of accepted applicants."));
         }
-
 
         await Role.findByIdAndUpdate(req.params.id, {
             $inc: { positionsAvailable: -1, originalPositions: -1 }
@@ -188,14 +158,13 @@ export const getRoleApplicants = async (req, res, next) => {
     }
 };
 
-// --- Other existing functions (create, delete, etc.) ---
 export const createRole = async (req, res, next) => {
   const teamId = req.params.teamid;
-  // Make sure originalPositions is set when creating
-  const newRole = new Role({
+  const newRoleData = {
     ...req.body,
     originalPositions: req.body.positionsAvailable 
-  });
+  };
+  const newRole = new Role(newRoleData);
 
   try {
     const savedRole = await newRole.save();
@@ -204,7 +173,8 @@ export const createRole = async (req, res, next) => {
         $push: { roles: savedRole._id },
       });
     } catch (err) {
-      next(err);
+      await Role.findByIdAndDelete(savedRole._id);
+      return next(createError(500, "Failed to associate role with team."));
     }
     res.status(200).json(savedRole);
   } catch (err) {
@@ -212,19 +182,33 @@ export const createRole = async (req, res, next) => {
   }
 };
 
-export const deleteRole = async (req, res, next) => {
-  const teamId = req.params.teamid;
+// NEW: Function to update the details of an existing role.
+export const updateRole = async (req, res, next) => {
   try {
-    await Role.findByIdAndDelete(req.params.id);
-    try {
-      await Team.findByIdAndUpdate(teamId, {
-        $pull: { roles: req.params.id },
-      });
-    } catch (err) {
-      next(err);
-    }
-    res.status(200).json("Role has been deleted.");
+    const updatedRole = await Role.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true }
+    );
+    res.status(200).json(updatedRole);
   } catch (err) {
     next(err);
   }
 };
+
+
+export const deleteRole = async (req, res, next) => {
+  const { teamid, id } = req.params;
+  try {
+    await Team.findByIdAndUpdate(teamid, {
+      $pull: { roles: id },
+    });
+    
+    await Role.findByIdAndDelete(id);
+    
+    res.status(200).json("Role has been successfully deleted.");
+  } catch (err) {
+    next(err);
+  }
+};
+

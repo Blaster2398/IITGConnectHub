@@ -47,16 +47,18 @@ export const verifyUser = (req, res, next) => {
   });
 };
 
-export const verifyAdmin = (req, res, next) => {
+// RENAMED from verifyAdmin for clarity. This specifically checks for the highest-level admin.
+export const verifySuperAdmin = (req, res, next) => {
   verifyToken(req, res, async () => {
     const currentUser = await User.findById(req.user.id);
-    if (currentUser.role === 'SuperAdmin') {
+    if (currentUser && currentUser.role === 'SuperAdmin') {
       next();
     } else {
       return next(createError(403, "This action requires SuperAdmin privileges."));
     }
   });
 };
+
 
 // REFACTORED: This middleware is now cleaner and uses helper functions.
 export const verifyTeamAdmin = async (req, res, next) => {
@@ -81,7 +83,9 @@ export const verifyTeamAdmin = async (req, res, next) => {
             } else if (req.params.id) { // e.g., /api/teams/:id
                 result = await getBoardFromTeamId(req.params.id);
             } else {
-                return next(createError(400, "Cannot determine resource for authorization."));
+                 // For POST /api/teams, there are no params.
+                 // The controller will handle authorization based on the request body.
+                return next();
             }
 
             if (result.error) {
@@ -98,3 +102,4 @@ export const verifyTeamAdmin = async (req, res, next) => {
         }
     });
 };
+

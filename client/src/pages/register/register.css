@@ -39,3 +39,27 @@
   cursor: pointer;
   border-radius: 5px;
 }
+
+/* NEW: Styles for admin registration section */
+.rAdminToggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: gray;
+  margin: 10px 0;
+}
+
+.rAdminFields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rAdminFields > select {
+  height: 50px;
+  padding: 10px;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+}
+
