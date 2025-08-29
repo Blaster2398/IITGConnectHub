@@ -5,7 +5,7 @@ import { AuthContextProvider } from "./context/AuthContext";
 import { SearchContextProvider } from "./context/SearchContext";
 import axios from 'axios'; // <-- IMPORT AXIOS
 
-axios.defaults.baseURL = "http://localhost:8800/api"; // <-- SET THE BASE URL
+axios.defaults.baseURL = "/api"; // <-- SET THE BASE URL
 axios.defaults.withCredentials = true; // <-- ADD THIS LINE
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

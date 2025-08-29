@@ -5,11 +5,11 @@ const BoardList = () => {
   const { data, loading, error } = useFetch("/teams/countByBoard");
 
   const images = [
-    "https://i.imgur.com/O6606qM.jpeg", // Technical
-    "https://i.imgur.com/s6n8i8r.jpeg", // Cultural
-    "https://i.imgur.com/yTz2voF.jpeg", // Welfare
-    "https://i.imgur.com/SAFD2G1.jpeg", // Sports
-    "https://i.imgur.com/qEaU8yN.jpeg", // HAB
+    "https://i.postimg.cc/6pGrvSD4/tech-logo.jpg", // Technical
+    "https://i.postimg.cc/CxD818qj/about-cult.png", // Cultural
+    "https://i.postimg.cc/qqStBBBb/welfare-board.png", // Welfare
+    "https://i.postimg.cc/XYMZTvzX/sports-board-logo.jpg", // Sports
+    "https://i.postimg.cc/ydrxn6R1/hab.png", // HAB
   ];
 
   return (

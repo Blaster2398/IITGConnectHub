@@ -11,10 +11,17 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  border: 1px solid lightgray;
-  border-radius: 5px;
-  padding-bottom: 10px;
+  border-radius: 10px;
   overflow: hidden;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  padding-bottom: 15px; /* Add padding at the bottom */
+}
+
+.ftItem:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .ftImg {
@@ -24,19 +31,23 @@
 }
 
 .ftDesc {
-  padding: 0 10px;
+  padding: 0 15px; /* Adjust padding */
   display: flex;
   flex-direction: column;
   gap: 5px;
+  flex-grow: 1; /* Allow description to take up space */
 }
 
 .ftName {
   color: #333;
   font-weight: bold;
+  font-size: 16px;
 }
 
 .ftCategory {
-  font-weight: 300;
+  font-weight: 400;
+  color: #666;
+  font-size: 14px;
 }
 
 .ftRating {
@@ -47,23 +58,31 @@
   background-color: #003580;
   color: white;
   border: none;
-  padding: 3px;
+  padding: 5px 8px; /* Adjust padding */
   margin-right: 10px;
   font-weight: bold;
+  border-radius: 5px; /* Add border-radius */
 }
 
 .ftRating > span {
   font-size: 14px;
+  font-weight: 500; /* Make it slightly bolder */
 }
 
 .ftViewButton {
-  width: calc(100% - 20px);
-  margin: 0 10px;
-  padding: 10px 5px;
+  width: calc(100% - 30px); /* Adjust width for padding */
+  margin: 10px 15px 0 15px; /* Adjust margin */
+  padding: 12px 5px; /* Adjust padding */
   background-color: #0071c2;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
+  font-size: 14px; /* Set font size */
+  transition: background-color 0.3s ease;
+}
+
+.ftViewButton:hover {
+  background-color: #005a9c;
 }

@@ -39,43 +39,65 @@
   margin: 20px 0px;
 }
 
-.headerBtn {
-  background-color: #0071c2;
-  color: white;
-  font-weight: 500;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  border-radius: 3px;
-}
+/* Updated styles start here */
 
 .headerSearch {
-  height: 30px;
+  height: auto; /* Adjust height based on content */
   background-color: white;
-  border: 3px solid #febb02;
+  border: none; /* Remove the old yellow border */
   display: flex;
   align-items: center;
-  justify-content: space-around;
-  padding: 10px 0px;
-  border-radius: 5px;
+  justify-content: space-between; /* Space out the input and button */
+  padding: 10px; /* Uniform padding */
+  border-radius: 8px; /* Softer, more modern corners */
   position: absolute;
-  bottom: -25px;
+  bottom: -35px; /* Reposition slightly */
   width: 100%;
   max-width: 1024px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Add a subtle shadow for depth */
 }
 
 .headerIcon {
-  color: lightgray;
+  color: #888; /* A softer icon color */
+  font-size: 20px;
 }
 
 .headerSearchItem {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-grow: 1; /* Allow the input container to take available space */
 }
 
 .headerSearchInput {
   border: none;
   outline: none;
-  width: 300px;
+  width: 100%; /* Fill its container */
+  font-size: 16px;
+  color: #333;
+}
+
+.headerSearchInput::placeholder {
+  color: #999;
+}
+
+/* Prevent the button's container from growing */
+.headerSearchItem:last-child {
+  flex-grow: 0;
+}
+
+.headerBtn {
+  background-color: #0071c2;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 12px 25px; /* Make the button larger and more clickable */
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.headerBtn:hover {
+  background-color: #005a9c;
 }

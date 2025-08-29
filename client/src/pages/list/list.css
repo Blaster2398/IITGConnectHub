@@ -13,56 +13,72 @@
 
 .listSearch {
   flex: 1;
-  background-color: #febb02;
-  padding: 10px;
+  background-color: #f8f9fa; /* Lighter, cleaner background */
+  padding: 20px;
   border-radius: 10px;
   position: sticky;
   top: 10px;
   height: max-content;
+  border: 1px solid #e9ecef; /* Subtle border */
 }
 
 .lsTitle {
-  font-size: 20px;
-  color: #555;
-  margin-bottom: 10px;
+  font-size: 22px; /* Larger title */
+  color: #333; /* Darker color */
+  margin-bottom: 20px; /* More space below title */
+  font-weight: 600;
 }
 
 .lsItem {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  margin-bottom: 10px;
+  gap: 8px; /* Space between label and input */
+  margin-bottom: 15px;
 }
 
 .lsItem > label {
-  font-size: 12px;
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
 }
 
-.lsItem > input, .lsItem > .lsSelect { /* MODIFIED: Apply styles to select as well */
-  height: 30px;
-  border: none;
-  padding: 5px;
-  border-radius: 3px; /* Added for consistency */
+/* Common styles for inputs and select */
+.lsItem > input,
+.lsItem > select {
+  height: 40px;
+  border: 1px solid #ced4da;
+  padding: 0 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* NEW: Specific style for select element for better appearance */
-.lsSelect {
-  height: 40px !important;
-  cursor: pointer;
+.lsItem > input:focus,
+.lsItem > select:focus {
+  outline: none;
+  border-color: #0071c2;
+  box-shadow: 0 0 0 3px rgba(0, 113, 194, 0.2);
 }
-
 
 .listSearch > button {
-  padding: 10px;
+  padding: 12px;
   background-color: #0071c2;
   color: white;
   border: none;
   width: 100%;
-  font-weight: 500;
+  font-weight: bold; /* Bolder text */
   cursor: pointer;
-  border-radius: 3px;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  margin-top: 10px; /* Space above button */
+}
+
+.listSearch > button:hover {
+  background-color: #005a9c;
 }
 
 .listResult {
   flex: 3;
 }
+

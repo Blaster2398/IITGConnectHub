@@ -11,6 +11,16 @@
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.bListItem:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .bListImg {
@@ -19,13 +29,20 @@
   object-fit: cover;
 }
 
+.bListTitles {
+  padding: 15px;
+}
+
 .bListTitles > h1 {
   font-size: 18px;
-  color: #444;
+  color: #333;
+  margin: 0 0 5px 0;
   text-transform: capitalize;
 }
 
 .bListTitles > h2 {
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 400;
+  color: #666;
+  margin: 0;
 }
