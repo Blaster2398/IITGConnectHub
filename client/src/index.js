@@ -5,7 +5,7 @@ import { AuthContextProvider } from "./context/AuthContext";
 import { SearchContextProvider } from "./context/SearchContext";
 import axios from 'axios'; // <-- IMPORT AXIOS
 
-axios.defaults.baseURL = "https://iitg-connect-hub-api.onrender.com/api"; // <-- SET THE BASE URL
+axios.defaults.baseURL = "/api";
 axios.defaults.withCredentials = true; // <-- ADD THIS LINE
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
