@@ -1,0 +1,74 @@
+.apply {
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.418);
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.aContainer {
+  background-color: white;
+  padding: 20px;
+  position: relative;
+  border-radius: 5px;
+}
+
+.aClose {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.aItem {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  padding: 20px;
+}
+
+.aItemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.aTitle {
+  font-weight: 500;
+}
+
+.aDesc {
+  font-weight: 300;
+}
+
+.aMax {
+  font-size: 12px;
+}
+
+.aCommitment {
+  font-weight: 500;
+}
+
+.aSelectRoles {
+  display: flex;
+  gap: 5px;
+  font-size: 8px;
+  color: gray;
+}
+
+.aButton {
+  border: none;
+  padding: 10px 20px;
+  background-color: #0071c2;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+  width: 100%;
+  margin-top: 20px;
+}

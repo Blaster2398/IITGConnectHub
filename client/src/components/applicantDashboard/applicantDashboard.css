@@ -1,0 +1,101 @@
+.applicantDashboard {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+}
+
+.adHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.adTitle {
+  margin: 0;
+  color: #333;
+}
+
+.positionsInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.increaseBtn,
+.decreaseBtn { /* NEW: Grouped styles for both buttons */
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: none;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.increaseBtn {
+    background-color: #0071c2; /* Blue for add */
+}
+
+.decreaseBtn {
+    background-color: #dc3545; /* Red for subtract */
+}
+
+.decreaseBtn:disabled {
+    background-color: #e27c85;
+    cursor: not-allowed;
+}
+
+
+.adTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.adTable th,
+.adTable td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.adTable th {
+  background-color: #e9ecef;
+  font-weight: 600;
+}
+
+.adStatus {
+  padding: 3px 8px;
+  border-radius: 10px;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.adStatus.applied {
+  background-color: #007bff;
+}
+
+.adStatus.interviewing {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.adStatus.accepted {
+  background-color: #28a745;
+}
+
+.adStatus.rejected {
+  background-color: #dc3545;
+}
+
+.adActionSelect {
+  padding: 5px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+}
